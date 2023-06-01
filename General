@@ -1,8 +1,3 @@
-#General set of functions 
-
-
-
-##Merge multiple dataframes by row names
 multimerge <- function (mylist) {
  
   unames = unique(unlist(lapply(mylist, rownames)))
