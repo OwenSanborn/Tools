@@ -41,3 +41,32 @@ html_to_table <- function (mylst, filepath) {
    combined_df <- do.call(rbind, data_frames)
    return(combined_df)
 }
+
+ ### Generates a random nucleotide (DNA) for a nucleotide given. Returns nt at frequency freq and a random nt at (1 - freq) / 3                      
+random_base <- function(nt, freq) {
+  nucleotides <- c("A", "T", "C", "G")
+  nucleotides <- nucleotides[nucleotides != nt]
+  freq.i <- (1 - freq) / 3
+  r <- runif(1)
+  if (r < freq) {
+    return(nt)
+  } else if (r < (freq + freq.i) ) {
+    return(nucleotides[[1]])
+  } else if (r < (freq + freq.i*2) ) {
+    return(nucleotides[[2]])
+  } else {
+    return(nucleotides[[3]])
+  }
+}
+
+ ### Find the number of nt changes in a string.                       
+find_diff <- function(input, reference) {
+  num_pos <- nchar(reference)
+  num_changes <- 0
+  for (p in 1:num_pos) {
+    if (substr(input, p, p) != substr(reference, p, p)) {
+      num_changes <- num_changes + 1
+    }
+  }
+  return(as.numeric(num_changes))
+}
