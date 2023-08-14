@@ -70,3 +70,62 @@ find_diff <- function(input, reference) {
   }
   return(as.numeric(num_changes))
 }
+
+### Takes Genes x Cells counts matrix and calculates log(CV^2)                         
+raw_variance <- function(counts) {
+  gene_names <- rownames(counts)
+  counts.raw <- lapply(gene_names, function(gene_name) {
+    cts <- counts[gene_name, ]
+    if(sum(cts != 0) > 2) {
+      CV <- log10((sd(cts[cts != 0])/mean(cts[cts != 0])^2))
+      Mean <- mean(cts[cts != 0])
+      data.frame(gene = gene_name, CV = CV, Mean = Mean)} })
+
+  Raw.counts <- do.call("rbind", counts.raw)
+  return(Raw.counts) 
+}
+
+### Takes Genes x Cells counts matrix and calculates relative counts per million and log(CV^2)                         
+adj_variance <- function(raw) {
+  cell_names <- colnames(raw)
+  
+  raw.list <- lapply(cell_names, function(cell) {
+    cts <- raw[ , cell]
+    total.transcripts <- sum(cts)
+    cts.rc.adj <- (cts / total.transcripts) * 1e6
+    data.frame(row.names = rownames(raw), cell = cts.rc.adj) })
+  
+  raw.RC <- do.call("cbind", raw.list)
+  
+  colnames(raw.RC) <- cell_names
+  
+  counts.adj <- lapply(rownames(raw.RC), function(gene_name) {
+    cts <- raw.RC[gene_name, ]
+    if(length(cts != 0) > 2) {
+      x <- as.numeric(cts[cts != 0])
+      CV <- log10((sd(x)/mean(x))^2)
+      Mean <- mean(x)
+      
+      data.frame(gene = gene_name, CV = CV, Mean = Mean)}})
+  
+  adj.counts <- do.call("rbind", counts.adj)
+  print("CV Adjustment Complete")
+  return(adj.counts)
+}
+### Applies spline model to relative cpm matrix and normalizes varaiance with residuals
+std_variance <- function(adj.counts) {
+  adj.counts <- adj.counts[!(adj.counts$CV %in% c(Inf, -Inf, NaN, NA)), ]
+  adj.counts <- adj.counts[!(adj.counts$Mean %in% c(Inf, -Inf, NaN, NA)), ]
+  
+  model <- lm(data = adj.counts, formula = CV ~ ns(Mean, df = 20))
+  
+  #model <- smooth.spline(adj.counts$Mean, adj.counts$CV, cv = TRUE)
+
+  residuals <- residuals(model)
+  mse <- sum(residuals^2) / (length(residuals) - length(model$coefficients))
+  standardized_residuals <- residuals / sqrt(mse)
+
+  adj.counts$std_res <- standardized_residuals
+  print("Residual Calculations Complete")
+  return(adj.counts)
+}
