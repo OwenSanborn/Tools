@@ -71,6 +71,19 @@ find_diff <- function(input, reference) {
   return(as.numeric(num_changes))
 }
 
+# Output position of nucleotide changes in a string
+find_diff_pos <- function(input, reference) {
+  num_pos <- nchar(reference)
+  loc_changes <- list()
+  for (p in 1:num_pos) {
+    if (substr(input, p, p) != substr(reference, p, p)) {
+      loc_changes[[p]] <- p
+    }
+  }
+  loc_changes <- Filter(function(x) !is.null(x), loc_changes)
+  return(as.numeric(unlist(loc_changes)))
+}
+                         
 ### Takes Genes x Cells counts matrix and calculates log(CV^2)                         
 raw_variance <- function(counts) {
   gene_names <- rownames(counts)
