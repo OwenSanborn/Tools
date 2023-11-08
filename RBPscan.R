@@ -145,7 +145,7 @@ weight <- function(freq, test, size, p.val, threshold) {
 
 
 # UMAP and plotting function
-umap.motifs <- function(Matrix, data, k, threshold, metric, label, size) {
+umap.motifs <- function(Matrix, data, k, threshold, metric, label) {
   umap <- umap(kmer_weights, n_neighbors = k, metric = metric, approx_pow = TRUE, ret_nn = TRUE)
 
   umap <- as.data.frame(umap$embedding)
@@ -164,7 +164,7 @@ umap.motifs <- function(Matrix, data, k, threshold, metric, label, size) {
     xlab("Dim 1") + ylab("Dim 2") +
     scale_color_gradient2(low = "#CCCCCC", mid = "#CCCCCC", high = "#100CCF",
                           midpoint = mean(umap$Score)) + 
-    labs(title = paste0("kmers: ", size))
+    labs(title = paste0("k: ", k))
   if (label == TRUE) {
     g <- g + geom_label_repel(max.overlaps = Inf, size = 2, color = "black", force = 2)
   }
