@@ -1,6 +1,6 @@
 # Function for kmer enrichment with wilcoxon
 kmer.wilcox <- function(freq, data) {
-  freq <- freq[nchar(rownames(freq)) %in% c(2,3,4,5,6,7), ]
+  freq <- freq[nchar(rownames(freq)) %in% c(2,3,4,5,6,7,8), ]
   freq[freq > 0] <- 1
   freq <- as.data.frame(t(freq))
 
