@@ -132,7 +132,7 @@ weight <- function(freq, test, size, p.val, threshold) {
     kmers <- intersect(kmers, test[test$p.val.adj < p.val, ]$Kmer)
     for (kmer in kmers) {
       if (weights[m, kmer] == 1) {
-        enrich_score <- test[test$Kmer == kmer, ]$estimate
+        enrich_score <- test[test$Kmer == kmer, ]$estimate * 10
         weights[m, kmer] <- as.numeric(weights[m, kmer]) * enrich_score
       }
       }
