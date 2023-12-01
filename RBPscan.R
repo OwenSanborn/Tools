@@ -4,7 +4,7 @@ kmer.wilcox <- function(freq, data) {
   freq[freq > 0] <- 1
   freq <- as.data.frame(t(freq))
 
-  freq$Score <- data[match(rownames(freq), data$Motif), ]$log2FC.t
+  freq$Score <- data[match(rownames(freq), data$Motif), ]$log2FC
 
 # Perform test
   result <- lapply(colnames(freq), function(x) {
@@ -146,15 +146,12 @@ weight <- function(freq, test, size, p.val, threshold) {
 
 # UMAP and plotting function
 umap.motifs <- function(Matrix, data, k, threshold, metric, label) {
-  umap <- umap(kmer_weights, n_neighbors = k, metric = metric, approx_pow = TRUE, ret_nn = TRUE)
+  umap <- umap(Matrix, n_neighbors = k, metric = metric, approx_pow = TRUE, ret_nn = TRUE)
 
   umap <- as.data.frame(umap$embedding)
-  umap$Score <- data[data$Motif %in% rownames(umap), ]$log2FC.t
-  umap$Score <- umap$Score + abs(min(data[data$Motif %in% rownames(umap), ]$log2FC.t))
-  
-  umap$Score.i <- data[data$Motif %in% rownames(umap), ]$log2FC
-  umap$Score.i <- umap$Score + abs(min(data[data$Motif %in% rownames(umap), ]$log2FC))
-  
+  umap$Score <- data[data$Motif %in% rownames(umap), ]$log2FC
+  umap$Score <- umap$Score + abs(min(data[data$Motif %in% rownames(umap), ]$log2FC))
+
   umap$label <- ifelse(umap$Score > threshold, as.character(rownames(umap)), "")
 
   g <- ggplot(umap, aes(x = umap$V1, y = umap$V2, color = Score, label = label)) +
