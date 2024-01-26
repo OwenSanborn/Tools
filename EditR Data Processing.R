@@ -35,5 +35,5 @@ process_output <- function(path) {
   positions <- c("3", "8", "13", "18", "23", "28", "33")
   combined_df <- subset(combined_df, guide.position %in% positions)
   
-  return(combined_df.i)
+  return(combined_df)
 }
