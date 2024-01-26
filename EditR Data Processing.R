@@ -1,7 +1,12 @@
+# After the html files are acquired from EditR, place them into a directory for processing.
+# They must be named "group.replicate" or "1313.1" for the group and rep to be parsed into the dataframe.
+# Data is ready for plotting from there or can be exported.
+
+
 library(rvest)
 library(dplyr)
 library(stringr)
-library(ggplot2)
+
 
 process_output <- function(path) {
   files <- dir(path)
